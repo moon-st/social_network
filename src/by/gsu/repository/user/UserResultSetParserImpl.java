@@ -4,7 +4,8 @@ import by.gsu.exption.RepositoryException;
 import by.gsu.model.City;
 import by.gsu.model.User;
 import by.gsu.repository.city.CityRepository;
-import by.gsu.repository.city.CityRepositoryImpl;
+import by.gsu.util.Profiling;
+import by.gsu.util.context.ComponentFactory;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -13,12 +14,13 @@ import java.util.List;
 /**
  * Created by Vasili on 22.11.2016.
  */
+@Profiling
 public class UserResultSetParserImpl implements UserResultSetParser {
 
     private CityRepository cityRepository;
 
     public UserResultSetParserImpl() {
-        cityRepository = new CityRepositoryImpl();
+        cityRepository = ComponentFactory.createComponent(CityRepository.class);
     }
 
     @Override

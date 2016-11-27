@@ -2,14 +2,13 @@ package by.gsu.repository;
 
 import by.gsu.exption.RepositoryException;
 import by.gsu.repository.util.ResultSetVisitor;
-import by.gsu.repository.util.StatementVisitor;
 
 import java.sql.*;
 
 /**
  * Created by Administrator on 21.11.16.
  */
-public class ConnectionManagerImpl implements ConnectionManager {
+public class ConnectionManagerImpl implements ConnectionManager, AutoCloseable {
 
     private static volatile Connection conn;
 
@@ -29,7 +28,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     @Override
     public <T> T executeQuery(String query, ResultSetVisitor<T> visitor)  {
-        try (Statement st  = conn.createStatement()) {
+        try (Statement st  = getConnection().createStatement()) {
             ResultSet rs = st.executeQuery(query);
             T result = visitor.visit(rs);
             rs.close();
@@ -42,7 +41,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
     @Override
     public void executeQuery(String query) {
-        try (Statement st  = conn.createStatement()) {
+        try (Statement st  = getConnection().createStatement()) {
             st.executeUpdate(query);
         } catch (SQLException e) {
             throw new RepositoryException(e);
@@ -69,6 +68,5 @@ public class ConnectionManagerImpl implements ConnectionManager {
             throw new RepositoryException(e);
         }
     }
-
 
 }

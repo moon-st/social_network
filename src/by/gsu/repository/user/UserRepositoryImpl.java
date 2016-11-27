@@ -2,11 +2,8 @@ package by.gsu.repository.user;
 
 import by.gsu.model.User;
 import by.gsu.repository.ConnectionManager;
-import by.gsu.repository.ConnectionManagerImpl;
-import by.gsu.repository.util.ResultSetVisitor;
+import by.gsu.util.context.ComponentFactory;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +24,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     public UserRepositoryImpl() {
-        cnManager = new ConnectionManagerImpl();
-        userRSParser = new UserResultSetParserImpl();
+        cnManager = ComponentFactory.createComponent(ConnectionManager.class);
+        userRSParser = ComponentFactory.createComponent(UserResultSetParser.class);
     }
 
     @Override

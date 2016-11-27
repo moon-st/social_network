@@ -2,7 +2,6 @@ package by.gsu.repository.city;
 
 import by.gsu.exption.RepositoryException;
 import by.gsu.model.City;
-import by.gsu.repository.city.CityResultSetParser;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +12,7 @@ import java.util.List;
  * Created by Administrator on 21.11.16.
  */
 public class CityResultSetParserImpl implements CityResultSetParser {
+
     @Override
     public List<City> parse(ResultSet rs) {
         try {

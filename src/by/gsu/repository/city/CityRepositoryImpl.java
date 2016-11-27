@@ -1,13 +1,9 @@
 package by.gsu.repository.city;
 
-import by.gsu.exption.RepositoryException;
 import by.gsu.model.City;
 import by.gsu.repository.ConnectionManager;
-import by.gsu.repository.ConnectionManagerImpl;
+import by.gsu.util.context.ComponentFactory;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -22,41 +18,21 @@ public class CityRepositoryImpl implements CityRepository {
     private CityResultSetParser cityRSParser;
 
     public CityRepositoryImpl() {
-        cnManager = new ConnectionManagerImpl();
-        cityRSParser = new CityResultSetParserImpl();
+        cnManager = ComponentFactory.createComponent(ConnectionManager.class);
+        cityRSParser = ComponentFactory.createComponent(CityResultSetParser.class);
     }
 
     @Override
     public List<City> findAll() {
-        Connection conn = cnManager.getConnection();
-
-        try (Statement st = conn.createStatement()) {
-
-            ResultSet resultSet = st.executeQuery(FIND_ALL);
-
-            List<City> result = cityRSParser.parse(resultSet);
-            resultSet.close();
-
-            return result;
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
+       return cnManager.executeQuery(FIND_ALL, rs -> cityRSParser.parse(rs));
     }
 
     @Override
     public City findById(long id) {
-        Connection conn = cnManager.getConnection();
-
-        try (Statement st = conn.createStatement()) {
-
-            ResultSet resultSet = st.executeQuery(String.format(FIND_BY_ID, id));
-
-            List<City> result = cityRSParser.parse(resultSet);
-            resultSet.close();
-
-            return result.get(0);
-        } catch (Exception e) {
-            throw new RepositoryException(e);
-        }
+        String query = String.format(FIND_BY_ID, id);
+        List<City> list =  cnManager.executeQuery(query, rs -> cityRSParser.parse(rs));
+        return list.get(0);
     }
+
+
 }
