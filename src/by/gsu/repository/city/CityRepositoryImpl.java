@@ -1,45 +1,31 @@
 package by.gsu.repository.city;
 
 import by.gsu.model.City;
-import by.gsu.repository.ConnectionManager;
-import by.gsu.util.context.InjectRandomInt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.List;
 
 /**
  * Created by Administrator on 21.11.16.
  */
-@Component
-@Primary
+@Repository
 public class CityRepositoryImpl implements CityRepository {
 
     public static final String FIND_ALL = "SELECT * FROM City";
-    public static final String FIND_BY_ID = "SELECT * FROM City WHERE id = %d ";
+    public static final String FIND_BY_ID = "SELECT * FROM City WHERE id = ? ";
+    public static final String FIND_BY_NAME = "SELECT * FROM City WHERE name = ? ";
+    public static final String CREATE = "INSERT INTO City(name) VALUES (?)";
 
     @Autowired
-    private ConnectionManager cnManager;
+    private JdbcTemplate jdbcTemplate;
     @Autowired
-    private CityResultSetParser cityRSParser;
-
-    @InjectRandomInt
-    public int number;
-
-    public CityRepositoryImpl() {
-        System.out.println(number);
-    }
-
-    @PostConstruct
-    public void initCache() {
-        List<City> cities = findAll();
-        System.out.println(cities);
-        System.out.println(number);
-    }
-
+    private CityRowMapper cityRowMapper;
 
     @PreDestroy
     public void writeCache() {
@@ -47,16 +33,26 @@ public class CityRepositoryImpl implements CityRepository {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<City> findAll() {
-       return cnManager.executeQuery(FIND_ALL, rs -> cityRSParser.parse(rs));
+        return jdbcTemplate.query(FIND_ALL, cityRowMapper);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public City findById(long id) {
-        String query = String.format(FIND_BY_ID, id);
-        List<City> list =  cnManager.executeQuery(query, rs -> cityRSParser.parse(rs));
-        return list.get(0);
+        return jdbcTemplate.queryForObject(FIND_BY_ID, new Object[] {id}, cityRowMapper);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public City findByName(String name) {
+        return jdbcTemplate.queryForObject(FIND_BY_NAME, new Object[] {name}, cityRowMapper);
+    }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void crate(City city) {
+        jdbcTemplate.update(CREATE, city.getName());
+    }
 }

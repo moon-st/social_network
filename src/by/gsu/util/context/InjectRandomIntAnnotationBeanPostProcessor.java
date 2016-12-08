@@ -15,8 +15,6 @@ import java.util.Random;
 public class InjectRandomIntAnnotationBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessBeforeInitialization(Object o, String s) throws BeansException {
-        System.out.println("postProcessBeforeInitialization");
-
         Field[] fields = o.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.getAnnotation(InjectRandomInt.class) != null) {
@@ -34,7 +32,6 @@ public class InjectRandomIntAnnotationBeanPostProcessor implements BeanPostProce
 
     @Override
     public Object postProcessAfterInitialization(Object o, String s) throws BeansException {
-        System.out.println("postProcessAfterInitialization");
         return o;
     }
 }

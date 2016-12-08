@@ -11,4 +11,8 @@ public interface CityRepository {
     List<City> findAll();
 
     City findById(long id);
+
+    City findByName(String name);
+
+    void crate(City city);
 }

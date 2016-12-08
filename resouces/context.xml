@@ -2,21 +2,31 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
        xmlns:c="http://www.springframework.org/schema/c" xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <context:annotation-config/>
     <context:component-scan base-package="by.gsu"/>
 
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 
-    <!---->
-    <!--<bean class="by.gsu.util.context.InjectRandomIntAnnotationBeanPostProcessor"/>-->
+        <property name="driverClassName" value="org.sqlite.JDBC" />
+        <property name="url" value="jdbc:sqlite:social_network.db" />
+        <property name="username" value="" />
+        <property name="password" value="" />
+    </bean>
 
-    <!--<bean class="by.gsu.repository.city.CityResultSetParserImpl" id="cityResultSetParser"/>-->
+    <bean id="jdbcTemplate"
+          class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
 
-    <!--<bean class="by.gsu.repository.city.CityRepositoryImpl" >-->
-    <!--<property name="cityRSParser" ref="cityResultSetParser"/>-->
-    <!--<property name="cnManager" ref="connectionManager"/>-->
-    <!--</bean>-->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
 
-    <!--<bean class="by.gsu.repository.city.CityRepositoryImpl" id="cityRepository" init-method="initCache" />-->
+    <tx:annotation-driven proxy-target-class="true"
+                          transaction-manager="transactionManager" />
 </beans>
