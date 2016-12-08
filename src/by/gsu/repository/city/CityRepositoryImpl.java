@@ -2,24 +2,48 @@ package by.gsu.repository.city;
 
 import by.gsu.model.City;
 import by.gsu.repository.ConnectionManager;
-import by.gsu.util.context.ComponentFactory;
+import by.gsu.util.context.InjectRandomInt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.List;
 
 /**
  * Created by Administrator on 21.11.16.
  */
+@Component
+@Primary
 public class CityRepositoryImpl implements CityRepository {
 
     public static final String FIND_ALL = "SELECT * FROM City";
     public static final String FIND_BY_ID = "SELECT * FROM City WHERE id = %d ";
 
+    @Autowired
     private ConnectionManager cnManager;
+    @Autowired
     private CityResultSetParser cityRSParser;
 
+    @InjectRandomInt
+    public int number;
+
     public CityRepositoryImpl() {
-        cnManager = ComponentFactory.createComponent(ConnectionManager.class);
-        cityRSParser = ComponentFactory.createComponent(CityResultSetParser.class);
+        System.out.println(number);
+    }
+
+    @PostConstruct
+    public void initCache() {
+        List<City> cities = findAll();
+        System.out.println(cities);
+        System.out.println(number);
+    }
+
+
+    @PreDestroy
+    public void writeCache() {
+        System.out.println("write cache!");
     }
 
     @Override

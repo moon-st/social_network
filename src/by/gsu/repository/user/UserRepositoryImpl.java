@@ -2,16 +2,24 @@ package by.gsu.repository.user;
 
 import by.gsu.model.User;
 import by.gsu.repository.ConnectionManager;
-import by.gsu.util.context.ComponentFactory;
+import by.gsu.repository.ConnectionManagerImpl;
+import by.gsu.repository.util.ResultSetVisitor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Vasili on 22.11.2016.
  */
+@Component
 public class UserRepositoryImpl implements UserRepository {
 
+    @Autowired
     private ConnectionManager cnManager;
+    @Autowired
     private UserResultSetParser userRSParser;
 
     private static class Queries {
@@ -21,11 +29,6 @@ public class UserRepositoryImpl implements UserRepository {
         private static final String CREATE = "INSERT INTO User('name', 'city_id') values('%s', %d)";
         private static final String UPDATE = "UPDATE User SET 'name' = '%s', 'city_id' = %d WHERE id = %d";
 
-    }
-
-    public UserRepositoryImpl() {
-        cnManager = ComponentFactory.createComponent(ConnectionManager.class);
-        userRSParser = ComponentFactory.createComponent(UserResultSetParser.class);
     }
 
     @Override

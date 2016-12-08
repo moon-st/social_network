@@ -2,13 +2,16 @@ package by.gsu.repository;
 
 import by.gsu.exption.RepositoryException;
 import by.gsu.repository.util.ResultSetVisitor;
+import by.gsu.repository.util.StatementVisitor;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
 
 /**
  * Created by Administrator on 21.11.16.
  */
-public class ConnectionManagerImpl implements ConnectionManager, AutoCloseable {
+@Component
+public class ConnectionManagerImpl implements ConnectionManager {
 
     private static volatile Connection conn;
 
@@ -68,5 +71,6 @@ public class ConnectionManagerImpl implements ConnectionManager, AutoCloseable {
             throw new RepositoryException(e);
         }
     }
+
 
 }

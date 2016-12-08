@@ -4,8 +4,10 @@ import by.gsu.exption.RepositoryException;
 import by.gsu.model.City;
 import by.gsu.model.User;
 import by.gsu.repository.city.CityRepository;
-import by.gsu.util.Profiling;
-import by.gsu.util.context.ComponentFactory;
+import by.gsu.repository.city.CityRepositoryImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -14,14 +16,12 @@ import java.util.List;
 /**
  * Created by Vasili on 22.11.2016.
  */
-@Profiling
+@Component
 public class UserResultSetParserImpl implements UserResultSetParser {
 
+    @Autowired
+    @Qualifier("cityRepo2")
     private CityRepository cityRepository;
-
-    public UserResultSetParserImpl() {
-        cityRepository = ComponentFactory.createComponent(CityRepository.class);
-    }
 
     @Override
     public List<User> parse(ResultSet rs) {
@@ -43,6 +43,4 @@ public class UserResultSetParserImpl implements UserResultSetParser {
             throw new RepositoryException(e);
         }
     }
-
-
 }
