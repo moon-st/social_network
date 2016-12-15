@@ -1,11 +1,16 @@
 package by.gsu.repository.user;
 
+import by.gsu.model.City;
 import by.gsu.model.User;
+import by.gsu.repository.city.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -17,7 +22,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private UserRowMapper userRowMapper;
+    private RowMapper<User> userRowMapper;
 
     private static class Queries {
         private static final String FIND_ALL = "SELECT * FROM USER";
@@ -53,5 +58,23 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> findAll() {
         return jdbcTemplate.query(Queries.FIND_ALL, userRowMapper);
+    }
+
+    @Component
+    public static class UserRowMapperImpl implements RowMapper<User> {
+
+        @Autowired
+        private CityRepository cityRepository;
+
+        @Override
+        public User mapRow(ResultSet resultSet, int i) throws SQLException {
+            long id = resultSet.getLong("id");
+            String name = resultSet.getString("name");
+            long cityId = resultSet.getLong("city_id");
+
+            City city = cityRepository.findById(cityId);
+
+            return new User(id, name, city);
+        }
     }
 }
